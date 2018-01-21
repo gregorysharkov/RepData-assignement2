@@ -1,0 +1,36 @@
+---
+title: "Storm analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(results = FALSE)
+
+require(dplyr)
+require(ggplot2)
+require(lubridate)
+
+```
+
+# Summary
+The goal of this analysis is to define answers for 2 basic questions:  
+- Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?  
+- Across the United States, which types of events have the greatest economic consequences?  
+  
+The analysis is based on the information collected by the National Weather Service, published [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2).  
+  
+```{r download and prepare data}
+sLink <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+fName <- "StormData.csv.bz2"
+if ( !file.exists( "fName" ) ){ download.file( sLink,fName ) }
+if ( !exists ("dsSource" ) ){ dsSource <- read.csv(fName) }
+
+dsSource$BGN_DATE <- mdy_hms( dsSource$BGN_DATE )
+dsSource$Year <- as.factor( year( dsSource$BGN_DATE ) )
+
+ds <- dsSource[,c("Year","STATE","EVTYPE","FATALITIES","INJURIES")]
+
+```
+
+## The most harmful with respect to population health storms
